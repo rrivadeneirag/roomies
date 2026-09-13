@@ -81,3 +81,4 @@ their own listings and as **seeker** on everyone else's), and **Moderator**.
     from a consistent set of neighborhoods.
 28. As a moderator, I want to manage the amenity catalog, so that properties describe
     their amenities from a consistent set.
+29. As a moderator, I want to remove any review that violates the community guidelines, so that the platform remains respectful and reliable.
