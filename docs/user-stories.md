@@ -82,3 +82,10 @@ their own listings and as **seeker** on everyone else's), and **Moderator**.
 28. As a moderator, I want to manage the amenity catalog, so that properties describe
     their amenities from a consistent set.
 29. As a moderator, I want to remove any review that violates the community guidelines, so that the platform remains respectful and reliable.
+
+## Additional stories
+
+30. As a host, I want to edit a published listing, so that its rent,
+    availability and description stay accurate.
+31. As a seeker, I want to remove a listing from my saved list, so that
+    my saved rooms stay relevant.
