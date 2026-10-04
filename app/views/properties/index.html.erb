@@ -1,0 +1,26 @@
+<% content_for :title, "Properties" %>
+
+<div class="container py-5">
+  <h1 class="h3 mb-4">Properties</h1>
+
+  <% if @properties.any? %>
+    <div class="row g-4">
+      <% @properties.each do |property| %>
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-body">
+              <h2 class="h5"><%= property.property_type %> — <%= property.neighborhood.name %></h2>
+              <p class="mb-1 text-muted"><%= property.address %></p>
+              <p class="mb-1"><%= pluralize(property.bedrooms, "bedroom") %> ·
+                <%= pluralize(property.bathrooms, "bathroom") %></p>
+              <p class="mb-2"><%= pluralize(property.listings.size, "listing") %></p>
+              <%= link_to "View property", property_path(property), class: "btn btn-outline-primary btn-sm" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-info">No properties yet.</div>
+  <% end %>
+</div>

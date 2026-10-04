@@ -1,0 +1,76 @@
+<% content_for :title, "Roomies — Find a room in a shared home" %>
+
+<section class="hero text-center py-5">
+  <div class="container py-4">
+    <h1 class="display-4 fw-bold">Find a room in a home you'll love</h1>
+    <p class="lead mx-auto mt-3" style="max-width: 40rem;">
+      Roomies connects people with a free room to offer and people looking for a
+      place to live. Search rooms, apply, visit, and move in — all in one place.
+    </p>
+    <%= link_to "Find a room", listings_path, class: "btn btn-light btn-lg mt-3" %>
+  </div>
+</section>
+
+<section id="search" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="h3 mb-4">Search rooms</h2>
+    <%= form_with url: listings_path, method: :get, class: "row g-3 align-items-end" do %>
+      <div class="col-md-4">
+        <label for="neighborhood" class="form-label">Neighborhood</label>
+        <select id="neighborhood" name="neighborhood" class="form-select">
+          <option value="">Any neighborhood</option>
+          <% @neighborhoods.each do |n| %>
+            <option value="<%= n.id %>"><%= n.name %></option>
+          <% end %>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="max_rent" class="form-label">Maximum rent (CLP)</label>
+        <input type="number" id="max_rent" name="max_rent" class="form-control" min="0" step="10000" placeholder="e.g. 350000">
+      </div>
+      <div class="col-md-3">
+        <label for="available_on" class="form-label">Available from</label>
+        <input type="date" id="available_on" name="available_on" class="form-control">
+      </div>
+      <div class="col-md-2 d-grid">
+        <button type="submit" class="btn btn-primary">Search</button>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <h2 class="h3 mb-4">Featured rooms</h2>
+    <% if @featured_listings.any? %>
+      <div class="row g-4">
+        <%= render partial: "listings/listing_card", collection: @featured_listings, as: :listing %>
+      </div>
+    <% else %>
+      <p class="text-muted">No featured rooms yet.</p>
+    <% end %>
+  </div>
+</section>
+
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="h3 mb-4 text-center">How Roomies works</h2>
+    <div class="row g-4 text-center">
+      <div class="col-md-4">
+        <div class="step-number mx-auto mb-3">1</div>
+        <h3 class="h5">Publish or search</h3>
+        <p class="text-muted">Hosts publish a room; seekers search by neighborhood, rent, date and amenities.</p>
+      </div>
+      <div class="col-md-4">
+        <div class="step-number mx-auto mb-3">2</div>
+        <h3 class="h5">Apply</h3>
+        <p class="text-muted">Send an application with a message, your move-in date and how long you'll stay.</p>
+      </div>
+      <div class="col-md-4">
+        <div class="step-number mx-auto mb-3">3</div>
+        <h3 class="h5">Visit and move in</h3>
+        <p class="text-muted">Arrange a visit, get accepted, and move into your new shared home.</p>
+      </div>
+    </div>
+  </div>
+</section>

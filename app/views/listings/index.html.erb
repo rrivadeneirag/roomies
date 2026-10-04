@@ -1,0 +1,13 @@
+<% content_for :title, "Rooms" %>
+
+<div class="container py-5">
+  <h1 class="h3 mb-4">Available rooms</h1>
+
+  <% if @listings.any? %>
+    <div class="row g-4">
+      <%= render partial: "listings/listing_card", collection: @listings, as: :listing %>
+    </div>
+  <% else %>
+    <div class="alert alert-info">No published rooms right now. Check back soon.</div>
+  <% end %>
+</div>

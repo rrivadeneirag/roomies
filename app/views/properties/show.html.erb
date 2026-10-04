@@ -1,0 +1,43 @@
+<% content_for :title, "Property detail" %>
+
+<div class="container py-5">
+  <p><%= link_to "← Back to properties", properties_path, class: "text-decoration-none" %></p>
+
+  <h1 class="h3"><%= @property.property_type %> in <%= @property.neighborhood.name %></h1>
+  <p class="text-muted"><%= @property.address %></p>
+
+  <ul class="list-inline">
+    <li class="list-inline-item"><strong><%= @property.bedrooms %></strong> bedrooms</li>
+    <li class="list-inline-item">·</li>
+    <li class="list-inline-item"><strong><%= @property.bathrooms %></strong> bathrooms</li>
+    <li class="list-inline-item">·</li>
+    <li class="list-inline-item">Host: <%= @property.host.name %></li>
+    <li class="list-inline-item">·</li>
+    <li class="list-inline-item"><%= link_to @property.neighborhood.name, neighborhood_path(@property.neighborhood) %></li>
+  </ul>
+
+  <% if @property.shared_spaces.present? %>
+    <p><strong>Shared spaces:</strong> <%= @property.shared_spaces %></p>
+  <% end %>
+
+  <h2 class="h5 mt-3">Amenities</h2>
+  <% if @property.amenities.any? %>
+    <% @property.amenities.each do |amenity| %>
+      <span class="badge bg-light text-dark border me-1 mb-1"><%= amenity.name %></span>
+    <% end %>
+  <% else %>
+    <p class="text-muted">None listed.</p>
+  <% end %>
+
+  <h2 class="h4 mt-4 mb-3">Listings in this property</h2>
+  <% if @listings.any? %>
+    <div class="row g-4">
+      <%= render partial: "listings/listing_card", collection: @listings, as: :listing %>
+    </div>
+  <% else %>
+    <p class="text-muted">No listings for this property.</p>
+  <% end %>
+
+  <h2 class="h4 mt-5 mb-3">Reviews</h2>
+  <%= render "shared/reviews", reviews: @reviews %>
+</div>

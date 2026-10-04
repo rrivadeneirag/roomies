@@ -1,0 +1,33 @@
+<% content_for :title, "Application detail" %>
+
+<div class="container py-5">
+  <p><%= link_to "← Back to applications", applications_path, class: "text-decoration-none" %></p>
+
+  <h1 class="h3">Application from <%= @application.seeker.name %></h1>
+  <span class="badge bg-secondary mb-3"><%= @application.status %></span>
+
+  <ul class="list-unstyled">
+    <li><strong>Room:</strong>
+      <%= link_to "#{@listing.property.property_type} in #{@listing.property.neighborhood.name}",
+                  listing_path(@listing) %></li>
+    <li><strong>Move-in date:</strong> <%= @application.move_in_on.strftime("%B %-d, %Y") %></li>
+    <li><strong>Intended stay:</strong> <%= pluralize(@application.stay_months, "month") %></li>
+  </ul>
+
+  <h2 class="h5 mt-3">Message</h2>
+  <p><%= @application.message %></p>
+
+  <h2 class="h4 mt-4 mb-3">Visits</h2>
+  <% if @visits.any? %>
+    <ul class="list-group">
+      <% @visits.each do |visit| %>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span><%= visit.scheduled_at.strftime("%B %-d, %Y · %H:%M") %></span>
+          <span class="badge bg-secondary"><%= visit.status %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="text-muted">No visits scheduled for this application.</p>
+  <% end %>
+</div>

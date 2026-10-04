@@ -1,0 +1,60 @@
+<% content_for :title, "Room detail" %>
+
+<div class="container py-5">
+  <p><%= link_to "← Back to rooms", listings_path, class: "text-decoration-none" %></p>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <% if @listing.photos.any? %>
+        <%= image_tag @listing.photos.first.image_url, class: "img-fluid rounded mb-3 w-100",
+                      style: "max-height: 360px; object-fit: cover;", alt: "Room photo" %>
+        <% if @listing.photos.size > 1 %>
+          <div class="row g-2">
+            <% @listing.photos.drop(1).each do |photo| %>
+              <div class="col-4">
+                <%= image_tag photo.image_url, class: "img-fluid rounded", alt: "Room photo" %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="col-lg-5">
+      <h1 class="h3"><%= @property.property_type %> in <%= @property.neighborhood.name %></h1>
+      <span class="badge bg-secondary mb-2"><%= @listing.status %></span>
+      <p class="h4 mt-2">CLP <%= number_with_delimiter(@listing.monthly_rent.to_i) %>
+        <small class="text-muted">/ month</small></p>
+
+      <ul class="list-unstyled mt-3">
+        <li><strong>Deposit:</strong> CLP <%= number_with_delimiter(@listing.deposit.to_i) %></li>
+        <li><strong>Available from:</strong> <%= @listing.available_on.strftime("%B %-d, %Y") %></li>
+        <li><strong>Minimum stay:</strong> <%= pluralize(@listing.minimum_stay_months, "month") %></li>
+        <li><strong>Furnished:</strong> <%= @listing.furnished? ? "Yes" : "No" %></li>
+        <li><strong>Private bathroom:</strong> <%= @listing.private_bathroom? ? "Yes" : "No" %></li>
+        <li><strong>Address:</strong> <%= @property.address %></li>
+        <li><strong>Host:</strong> <%= @property.host.name %></li>
+      </ul>
+
+      <% if @listing.description.present? %>
+        <p><%= @listing.description %></p>
+      <% end %>
+
+      <h2 class="h5 mt-4">Amenities</h2>
+      <% if @property.amenities.any? %>
+        <% @property.amenities.each do |amenity| %>
+          <span class="badge bg-light text-dark border me-1 mb-1"><%= amenity.name %></span>
+        <% end %>
+      <% else %>
+        <p class="text-muted">No amenities listed.</p>
+      <% end %>
+
+      <p class="mt-4"><%= link_to "View full property", property_path(@property), class: "btn btn-outline-primary" %></p>
+    </div>
+  </div>
+
+  <hr class="my-5">
+
+  <h2 class="h4 mb-3">Reviews of this property</h2>
+  <%= render "shared/reviews", reviews: @reviews %>
+</div>

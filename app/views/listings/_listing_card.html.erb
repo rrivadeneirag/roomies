@@ -1,0 +1,18 @@
+<article class="col-md-4">
+  <div class="card h-100 shadow-sm">
+    <% photo = listing.photos.first %>
+    <% if photo %>
+      <%= image_tag photo.image_url, class: "listing-photo card-img-top",
+                    alt: "Room in #{listing.property.neighborhood.name}" %>
+    <% end %>
+    <div class="card-body">
+      <h3 class="h5 card-title"><%= listing.property.property_type %> in <%= listing.property.neighborhood.name %></h3>
+      <p class="card-text mb-1"><strong>Neighborhood:</strong> <%= listing.property.neighborhood.name %></p>
+      <p class="card-text mb-1"><strong>CLP <%= number_with_delimiter(listing.monthly_rent.to_i) %></strong> / month</p>
+      <p class="card-text text-muted mb-0">Available from <%= listing.available_on.strftime("%B %-d, %Y") %></p>
+    </div>
+    <div class="card-footer bg-white border-0">
+      <%= link_to "View room", listing_path(listing), class: "btn btn-outline-primary w-100" %>
+    </div>
+  </div>
+</article>

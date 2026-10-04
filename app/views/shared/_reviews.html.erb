@@ -1,0 +1,20 @@
+<% if reviews.any? %>
+  <div class="row g-3">
+    <% reviews.each do |review| %>
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-body">
+            <p class="mb-1">
+              <strong>Rating:</strong> <%= review.rating %>/5
+              <% if review.matched %><span class="badge bg-success ms-1">Matched</span><% end %>
+            </p>
+            <p class="mb-1"><%= review.comment %></p>
+            <p class="text-muted small mb-0"><%= review.reviewed_on.strftime("%B %-d, %Y") %></p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p class="text-muted">No reviews yet.</p>
+<% end %>
