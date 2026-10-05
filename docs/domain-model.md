@@ -18,17 +18,23 @@ Table users {
   password_digest varchar [not null]
   role varchar [not null, note: 'member or moderator']
   phone varchar
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table neighborhoods {
   id bigint [primary key]
   name varchar [not null, unique]
   city varchar [not null]
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table amenities {
   id bigint [primary key]
   name varchar [not null, unique]
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table properties {
@@ -40,12 +46,16 @@ Table properties {
   bedrooms integer [not null]
   bathrooms integer [not null]
   shared_spaces text
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table property_amenities {
   id bigint [primary key]
   property_id bigint [not null]
   amenity_id bigint [not null]
+  created_at timestamp
+  updated_at timestamp
 
   indexes {
     (property_id, amenity_id) [unique]
@@ -63,6 +73,8 @@ Table listings {
   private_bathroom boolean [not null]
   description text
   status varchar [not null, note: 'Draft, Published, Reserved, Rented, Withdrawn']
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table photos {
@@ -70,6 +82,8 @@ Table photos {
   listing_id bigint [not null]
   image_url varchar [not null]
   position integer [not null]
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table applications {
@@ -80,6 +94,8 @@ Table applications {
   move_in_on date [not null]
   stay_months integer [not null]
   status varchar [not null, note: 'Pending, Shortlisted, Accepted, Rejected, Withdrawn']
+  created_at timestamp
+  updated_at timestamp
 
   indexes {
     (listing_id, seeker_id) [unique]
@@ -91,6 +107,8 @@ Table visits {
   application_id bigint [not null]
   scheduled_at datetime [not null]
   status varchar [not null, note: 'Proposed, Confirmed, Cancelled, Completed']
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table reviews {
@@ -100,6 +118,8 @@ Table reviews {
   comment text [not null]
   matched boolean [not null]
   reviewed_on date [not null]
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table reports {
@@ -110,12 +130,16 @@ Table reports {
   status varchar [not null, note: 'Pending, Reviewed, Dismissed, ActionTaken']
   moderator_id bigint
   resolved_on date
+  created_at timestamp
+  updated_at timestamp
 }
 
 Table saved_listings {
   id bigint [primary key]
   user_id bigint [not null]
   listing_id bigint [not null]
+  created_at timestamp
+  updated_at timestamp
 
   indexes {
     (user_id, listing_id) [unique]
@@ -137,24 +161,3 @@ Ref: reports.reporter_id > users.id
 Ref: reports.moderator_id > users.id
 Ref: saved_listings.user_id > users.id
 Ref: saved_listings.listing_id > listings.id
-```
-
-## Relationships and cardinality
-
-- A **user** hosts many **properties**; a property has one host. (1–N)
-- A **neighborhood** groups many **properties**; a property sits in one neighborhood. (1–N)
-- A **property** offers many **amenities** and an amenity belongs to many properties,
-  through **property_amenities**. (N–M)
-- A **property** has many **listings** over time; a listing belongs to one property. (1–N)
-- A **listing** has many **photos**; a photo belongs to one listing. (1–N)
-- A **listing** receives many **applications**, and a **user** (seeker) sends many
-  applications; **applications** is the association between users and listings and
-  carries its own message, dates and state. (N–M with data)
-- An **application** has many **visits** over time; a visit belongs to one application. (1–N)
-- A **visit** has at most one **review**; a review belongs to exactly one completed
-  visit. (1–1)
-- A **listing** collects many **reports**; a **user** files many reports and a
-  **moderator** (a user) resolves many; each report points at one listing, one
-  reporter and at most one moderator. (1–N)
-- A **user** saves many **listings** and a listing is saved by many users, through
-  **saved_listings**. (N–M)
