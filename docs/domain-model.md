@@ -161,3 +161,10 @@ Ref: reports.reporter_id > users.id
 Ref: reports.moderator_id > users.id
 Ref: saved_listings.user_id > users.id
 Ref: saved_listings.listing_id > listings.id
+
+## Changes in Assignment 2
+When implementing the model in Rails, two additions were made:
+- Timestamps (`created_at` / `updated_at`) were added to every table.
+- Database defaults were set for the state and boolean columns (listing status Draft, application status Pending, visit status Proposed, report status Pending, user role member, furnished and private_bathroom false).
+
+![Updated domain model](domain-model-v2.png)
