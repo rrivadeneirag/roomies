@@ -11,18 +11,24 @@ class Visit < ApplicationRecord
 
   validates :scheduled_at, presence: true
   validates :status, presence: true
-  validate :scheduled_after_application_created
+  validate :not_in_past, on: :create
+  validate :application_shortlisted, on: :create
 
   scope :upcoming, -> { where("scheduled_at >= ?", Time.current) }
 
   private
 
-  def scheduled_after_application_created
-    return if scheduled_at.blank? || application.blank?
+  def not_in_past
+    return if scheduled_at.blank?
 
-    created = application.created_at || Time.current
-    if scheduled_at <= created
-      errors.add(:scheduled_at, "must be after the application was created")
+    errors.add(:scheduled_at, "can't be in the past") if scheduled_at < Time.current
+  end
+
+  def application_shortlisted
+    return if application.blank?
+
+    unless application.shortlisted?
+      errors.add(:base, "A visit can only be proposed on a shortlisted application.")
     end
   end
 end

@@ -1,7 +1,10 @@
 <% content_for :title, "Neighborhoods" %>
 
 <div class="container py-5">
-  <h1 class="h3 mb-4">Neighborhoods</h1>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Neighborhoods</h1>
+    <%= link_to "New neighborhood", new_neighborhood_path, class: "btn btn-primary" %>
+  </div>
 
   <% if @neighborhoods.any? %>
     <div class="row g-4">
@@ -11,8 +14,12 @@
             <div class="card-body">
               <h2 class="h5"><%= neighborhood.name %></h2>
               <p class="text-muted mb-2"><%= neighborhood.city %></p>
-              <p class="mb-2"><%= pluralize(neighborhood.properties.size, "property", plural: "properties") %></p>
-              <%= link_to "View neighborhood", neighborhood_path(neighborhood), class: "btn btn-outline-primary btn-sm" %>
+              <p class="mb-3"><%= pluralize(neighborhood.properties.size, "property", plural: "properties") %></p>
+              <%= link_to "View", neighborhood_path(neighborhood), class: "btn btn-outline-primary btn-sm" %>
+              <%= link_to "Edit", edit_neighborhood_path(neighborhood), class: "btn btn-outline-secondary btn-sm" %>
+              <%= button_to "Delete", neighborhood_path(neighborhood), method: :delete,
+                    class: "btn btn-outline-danger btn-sm", form: { style: "display:inline" },
+                    data: { turbo_confirm: "Delete this neighborhood and its properties?" } %>
             </div>
           </div>
         </div>

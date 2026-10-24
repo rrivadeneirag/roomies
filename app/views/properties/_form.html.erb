@@ -1,0 +1,62 @@
+<%= form_with model: property do |f| %>
+  <% if property.errors.any? %>
+    <div class="alert alert-danger">Please fix the errors below.</div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :address, class: "form-label" %>
+    <%= f.text_field :address, class: "form-control", required: true,
+          placeholder: "e.g. Av. Providencia 1234, Depto 52" %>
+    <%= render "shared/field_error", resource: property, attribute: :address %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :neighborhood_id, "Neighborhood", class: "form-label" %>
+    <%= f.collection_select :neighborhood_id, Neighborhood.order(:name), :id, :name,
+          { prompt: "Choose a neighborhood" }, class: "form-select", required: true %>
+    <%= render "shared/field_error", resource: property, attribute: :neighborhood %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :property_type, class: "form-label" %>
+    <%= f.select :property_type, ["Apartment", "House", "Studio", "Room"],
+          { prompt: "Choose a type" }, class: "form-select", required: true %>
+    <%= render "shared/field_error", resource: property, attribute: :property_type %>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :bedrooms, class: "form-label" %>
+      <%= f.number_field :bedrooms, class: "form-control", min: 0, required: true %>
+      <%= render "shared/field_error", resource: property, attribute: :bedrooms %>
+    </div>
+    <div class="col-md-6 mb-3">
+      <%= f.label :bathrooms, class: "form-label" %>
+      <%= f.number_field :bathrooms, class: "form-control", min: 0, required: true %>
+      <%= render "shared/field_error", resource: property, attribute: :bathrooms %>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :shared_spaces, class: "form-label" %>
+    <%= f.text_area :shared_spaces, class: "form-control", rows: 2,
+          placeholder: "e.g. Living room, kitchen and a balcony" %>
+  </div>
+
+  <div class="mb-4">
+    <span class="form-label d-block">Amenities</span>
+    <div class="row">
+      <%= f.collection_check_boxes :amenity_ids, Amenity.order(:name), :id, :name do |b| %>
+        <div class="col-md-4 mb-1">
+          <div class="form-check">
+            <%= b.check_box(class: "form-check-input") %>
+            <%= b.label(class: "form-check-label") %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%= f.submit class: "btn btn-primary" %>
+  <%= link_to "Cancel", properties_path, class: "btn btn-link" %>
+<% end %>

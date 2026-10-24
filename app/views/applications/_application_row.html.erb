@@ -1,0 +1,23 @@
+<tr id="<%= dom_id(application) %>">
+  <td><%= application.seeker.name %></td>
+  <td>
+    <%= link_to "#{application.listing.property.property_type} in #{application.listing.property.neighborhood.name}",
+          application.listing %>
+  </td>
+  <td><%= application.move_in_on.strftime("%b %-d, %Y") %></td>
+  <td><span class="badge bg-secondary"><%= application.status %></span></td>
+  <td class="text-end text-nowrap">
+    <%= link_to "View", application_path(application), class: "btn btn-outline-primary btn-sm" %>
+    <% if application.pending? || application.shortlisted? %>
+      <% unless application.shortlisted? %>
+        <%= button_to "Shortlist", shortlist_application_path(application), method: :patch,
+              class: "btn btn-outline-info btn-sm", form: { style: "display:inline" } %>
+      <% end %>
+      <%= button_to "Accept", accept_application_path(application), method: :patch,
+            class: "btn btn-success btn-sm", form: { style: "display:inline" },
+            data: { turbo_confirm: "Accept this applicant? This rejects the others and reserves the room." } %>
+      <%= button_to "Reject", reject_application_path(application), method: :patch,
+            class: "btn btn-outline-danger btn-sm", form: { style: "display:inline" } %>
+    <% end %>
+  </td>
+</tr>

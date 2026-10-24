@@ -1,7 +1,10 @@
 <% content_for :title, "Properties" %>
 
 <div class="container py-5">
-  <h1 class="h3 mb-4">Properties</h1>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Properties</h1>
+    <%= link_to "New property", new_property_path, class: "btn btn-primary" %>
+  </div>
 
   <% if @properties.any? %>
     <div class="row g-4">
@@ -13,14 +16,19 @@
               <p class="mb-1 text-muted"><%= property.address %></p>
               <p class="mb-1"><%= pluralize(property.bedrooms, "bedroom") %> ·
                 <%= pluralize(property.bathrooms, "bathroom") %></p>
-              <p class="mb-2"><%= pluralize(property.listings.size, "listing") %></p>
-              <%= link_to "View property", property_path(property), class: "btn btn-outline-primary btn-sm" %>
+              <p class="mb-3"><%= pluralize(property.listings.size, "listing") %></p>
+              <%= link_to "View", property_path(property), class: "btn btn-outline-primary btn-sm" %>
+              <%= link_to "Edit", edit_property_path(property), class: "btn btn-outline-secondary btn-sm" %>
+              <%= button_to "Delete", property_path(property), method: :delete,
+                    class: "btn btn-outline-danger btn-sm",
+                    form: { style: "display:inline" },
+                    data: { turbo_confirm: "Delete this property?" } %>
             </div>
           </div>
         </div>
       <% end %>
     </div>
   <% else %>
-    <div class="alert alert-info">No properties yet.</div>
+    <div class="alert alert-info">No properties yet. Create the first one.</div>
   <% end %>
 </div>

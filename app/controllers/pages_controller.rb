@@ -1,7 +1,8 @@
 class PagesController < ApplicationController
   def home
     @featured_listings = Listing.published
-                                .includes(:photos, property: :neighborhood)
+                                .with_attached_photos
+                                .includes(property: :neighborhood)
                                 .order(available_on: :asc)
                                 .limit(3)
     @neighborhoods = Neighborhood.order(:name)

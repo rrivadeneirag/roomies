@@ -11,7 +11,20 @@
           <li class="nav-item"><%= link_to "Rooms", listings_path, class: "nav-link" %></li>
           <li class="nav-item"><%= link_to "Properties", properties_path, class: "nav-link" %></li>
           <li class="nav-item"><%= link_to "Neighborhoods", neighborhoods_path, class: "nav-link" %></li>
+          <li class="nav-item"><%= link_to "Amenities", amenities_path, class: "nav-link" %></li>
           <li class="nav-item"><%= link_to "Applications", applications_path, class: "nav-link" %></li>
+          <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+            <%= form_with url: switch_user_path, method: :post, data: { turbo: false } do |f| %>
+              <div class="d-flex align-items-center gap-2">
+                <span class="text-muted small text-nowrap">Acting as</span>
+                <%= f.select :user_id,
+                      options_from_collection_for_select(User.order(:name), :id, :name, current_user&.id),
+                      {},
+                      class: "form-select form-select-sm",
+                      onchange: "this.form.requestSubmit()" %>
+              </div>
+            <% end %>
+          </li>
         </ul>
       </div>
     </div>

@@ -1,9 +1,13 @@
 <article class="col-md-4">
   <div class="card h-100 shadow-sm">
-    <% photo = listing.photos.first %>
-    <% if photo %>
-      <%= image_tag photo.image_url, class: "listing-photo card-img-top",
+    <% if listing.photos.attached? %>
+      <%= image_tag listing.photos.first.variant(resize_to_fill: [400, 250]),
+                    class: "listing-photo card-img-top",
                     alt: "Room in #{listing.property.neighborhood.name}" %>
+    <% else %>
+      <div class="listing-photo card-img-top bg-light d-flex align-items-center justify-content-center text-muted">
+        No photo
+      </div>
     <% end %>
     <div class="card-body">
       <h3 class="h5 card-title"><%= listing.property.property_type %> in <%= listing.property.neighborhood.name %></h3>

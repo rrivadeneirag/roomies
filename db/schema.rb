@@ -10,9 +10,47 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_04_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_23_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "body"
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "amenities", force: :cascade do |t|
     t.string "name", null: false
@@ -43,7 +81,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_120000) do
     t.integer "minimum_stay_months", null: false
     t.boolean "furnished", default: false, null: false
     t.boolean "private_bathroom", default: false, null: false
-    t.text "description"
     t.string "status", default: "Draft", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -57,15 +94,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_120000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_neighborhoods_on_name", unique: true
-  end
-
-  create_table "photos", force: :cascade do |t|
-    t.bigint "listing_id", null: false
-    t.string "image_url", null: false
-    t.integer "position", default: 1, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["listing_id"], name: "index_photos_on_listing_id"
   end
 
   create_table "properties", force: :cascade do |t|
@@ -147,10 +175,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_120000) do
     t.index ["application_id"], name: "index_visits_on_application_id"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "applications", "listings"
   add_foreign_key "applications", "users", column: "seeker_id"
   add_foreign_key "listings", "properties"
-  add_foreign_key "photos", "listings"
   add_foreign_key "properties", "neighborhoods"
   add_foreign_key "properties", "users", column: "host_id"
   add_foreign_key "property_amenities", "amenities"

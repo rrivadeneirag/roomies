@@ -1,38 +1,43 @@
 <% content_for :title, "Applications" %>
 
 <div class="container py-5">
-  <h1 class="h3 mb-2">Applications</h1>
-  <p class="text-muted mb-4"><%= @pending %> pending an answer</p>
+  <h1 class="h3 mb-4">Applications</h1>
 
-  <% if @applications.any? %>
+  <h2 class="h5">Incoming — to your listings</h2>
+  <p class="text-muted">Pending an answer: <span id="pending_count"><%= @pending_count %></span></p>
+
+  <% if @incoming.any? %>
     <div class="table-responsive">
       <table class="table align-middle">
         <thead>
-          <tr>
-            <th scope="col">Seeker</th>
-            <th scope="col">Room</th>
-            <th scope="col">Move-in</th>
-            <th scope="col">Stay</th>
-            <th scope="col">Status</th>
-            <th scope="col"></th>
-          </tr>
+          <tr><th>Seeker</th><th>Room</th><th>Move-in</th><th>Status</th><th></th></tr>
         </thead>
-        <tbody>
-          <% @applications.each do |application| %>
-            <tr>
-              <td><%= application.seeker.name %></td>
-              <td><%= application.listing.property.property_type %> in
-                  <%= application.listing.property.neighborhood.name %></td>
-              <td><%= application.move_in_on.strftime("%b %-d, %Y") %></td>
-              <td><%= pluralize(application.stay_months, "month") %></td>
-              <td><span class="badge bg-secondary"><%= application.status %></span></td>
-              <td class="text-end"><%= link_to "View", application_path(application), class: "btn btn-sm btn-outline-primary" %></td>
-            </tr>
-          <% end %>
+        <tbody id="incoming_applications">
+          <%= render partial: "applications/application_row", collection: @incoming, as: :application %>
         </tbody>
       </table>
     </div>
   <% else %>
-    <div class="alert alert-info">No applications yet.</div>
+    <div class="alert alert-info">No applications to your listings yet.</div>
+  <% end %>
+
+  <h2 class="h5 mt-5">Your applications — as a seeker</h2>
+  <% if @my_applications.any? %>
+    <ul class="list-group">
+      <% @my_applications.each do |a| %>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <%= link_to "#{a.listing.property.property_type} in #{a.listing.property.neighborhood.name}", a.listing %>
+          <span class="text-nowrap">
+            <span class="badge bg-secondary me-2"><%= a.status %></span>
+            <% if a.withdrawable? %>
+              <%= button_to "Withdraw", withdraw_application_path(a), method: :patch,
+                    class: "btn btn-outline-danger btn-sm", form: { style: "display:inline" } %>
+            <% end %>
+          </span>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="text-muted">You haven't applied to any rooms yet.</p>
   <% end %>
 </div>

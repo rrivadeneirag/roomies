@@ -5,24 +5,50 @@
 
   <div class="row g-4">
     <div class="col-lg-7">
-      <% if @listing.photos.any? %>
-        <%= image_tag @listing.photos.first.image_url, class: "img-fluid rounded mb-3 w-100",
+      <% if @listing.photos.attached? %>
+        <%= image_tag @listing.photos.first.variant(resize_to_limit: [800, 500]),
+                      class: "img-fluid rounded mb-3 w-100",
                       style: "max-height: 360px; object-fit: cover;", alt: "Room photo" %>
         <% if @listing.photos.size > 1 %>
           <div class="row g-2">
             <% @listing.photos.drop(1).each do |photo| %>
               <div class="col-4">
-                <%= image_tag photo.image_url, class: "img-fluid rounded", alt: "Room photo" %>
+                <%= image_tag photo.variant(resize_to_limit: [300, 200]), class: "img-fluid rounded" %>
               </div>
             <% end %>
           </div>
         <% end %>
+      <% else %>
+        <div class="bg-light border rounded d-flex align-items-center justify-content-center text-muted"
+             style="height: 300px;">No photos yet</div>
       <% end %>
     </div>
 
     <div class="col-lg-5">
       <h1 class="h3"><%= @property.property_type %> in <%= @property.neighborhood.name %></h1>
       <span class="badge bg-secondary mb-2"><%= @listing.status %></span>
+
+      <% if current_user == @property.host %>
+        <div class="mb-3">
+          <% if @listing.draft? %>
+            <%= button_to "Publish", publish_listing_path(@listing), method: :patch,
+                  class: "btn btn-success btn-sm", form: { style: "display:inline" } %>
+          <% end %>
+          <% if @listing.published? || @listing.reserved? %>
+            <%= button_to "Mark as rented", mark_rented_listing_path(@listing), method: :patch,
+                  class: "btn btn-dark btn-sm", form: { style: "display:inline" } %>
+          <% end %>
+          <% unless @listing.rented? || @listing.withdrawn? %>
+            <%= button_to "Withdraw", withdraw_listing_path(@listing), method: :patch,
+                  class: "btn btn-outline-warning btn-sm", form: { style: "display:inline" } %>
+          <% end %>
+          <%= link_to "Edit", edit_listing_path(@listing), class: "btn btn-outline-secondary btn-sm" %>
+          <%= button_to "Delete", listing_path(@listing), method: :delete,
+                class: "btn btn-outline-danger btn-sm", form: { style: "display:inline" },
+                data: { turbo_confirm: "Delete this listing?" } %>
+        </div>
+      <% end %>
+
       <p class="h4 mt-2">CLP <%= number_with_delimiter(@listing.monthly_rent.to_i) %>
         <small class="text-muted">/ month</small></p>
 
@@ -36,22 +62,30 @@
         <li><strong>Host:</strong> <%= @property.host.name %></li>
       </ul>
 
-      <% if @listing.description.present? %>
-        <p><%= @listing.description %></p>
-      <% end %>
+      <p class="mt-3"><%= link_to "View full property", property_path(@property), class: "btn btn-outline-primary btn-sm" %></p>
 
-      <h2 class="h5 mt-4">Amenities</h2>
-      <% if @property.amenities.any? %>
-        <% @property.amenities.each do |amenity| %>
-          <span class="badge bg-light text-dark border me-1 mb-1"><%= amenity.name %></span>
-        <% end %>
-      <% else %>
-        <p class="text-muted">No amenities listed.</p>
-      <% end %>
-
-      <p class="mt-4"><%= link_to "View full property", property_path(@property), class: "btn btn-outline-primary" %></p>
+      <div class="mt-4">
+        <%= render "applications/apply_section", listing: @listing, application: @application %>
+      </div>
     </div>
   </div>
+
+  <h2 class="h5 mt-4">Description</h2>
+  <div class="trix-content"><%= @listing.description %></div>
+
+  <% if @listing.house_rules.present? %>
+    <h2 class="h5 mt-4">House rules</h2>
+    <div class="trix-content"><%= @listing.house_rules %></div>
+  <% end %>
+
+  <h2 class="h5 mt-4">Amenities</h2>
+  <% if @property.amenities.any? %>
+    <% @property.amenities.each do |amenity| %>
+      <span class="badge bg-light text-dark border me-1 mb-1"><%= amenity.name %></span>
+    <% end %>
+  <% else %>
+    <p class="text-muted">No amenities listed.</p>
+  <% end %>
 
   <hr class="my-5">
 

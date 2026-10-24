@@ -1,0 +1,20 @@
+<%= form_with model: neighborhood do |f| %>
+  <% if neighborhood.errors.any? %>
+    <div class="alert alert-danger">Please fix the errors below.</div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :name, class: "form-label" %>
+    <%= f.text_field :name, class: "form-control", required: true, placeholder: "e.g. Providencia" %>
+    <%= render "shared/field_error", resource: neighborhood, attribute: :name %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :city, class: "form-label" %>
+    <%= f.text_field :city, class: "form-control", required: true, placeholder: "e.g. Santiago" %>
+    <%= render "shared/field_error", resource: neighborhood, attribute: :city %>
+  </div>
+
+  <%= f.submit class: "btn btn-primary" %>
+  <%= link_to "Cancel", neighborhoods_path, class: "btn btn-link" %>
+<% end %>

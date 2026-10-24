@@ -1,24 +1,25 @@
 # Roomies
 
 Roomies connects people offering a free room in a shared home with people looking
-for a place to live. Seekers browse rooms by neighborhood, rent and availability,
-read property details and reviews, and follow their applications and visits.
+for a place to live. Hosts publish rooms, upload photos and write house rules;
+seekers apply, visit, and move in.
 
-This repository contains the Rails 8 application (Assignment 2). The original
-specification from Assignment 1 — user stories, domain model and design
-decisions — lives in [`docs/`](docs/).
+The original specification (Assignment 1) lives in [`docs/`](docs/).
 
 ## Tech stack
 
-- Ruby 3.x and Rails 8
+- Ruby and Rails 8 (importmap + Hotwire / Turbo)
 - PostgreSQL (development and test)
 - Bootstrap 5, bundled with cssbundling-rails
+- Active Storage for photographs (with image variants)
+- Action Text for the listing description and house rules
 
 ## Requirements
 
 - Ruby (see `.ruby-version`)
 - PostgreSQL running locally
-- Node.js and Yarn (used by cssbundling to build Bootstrap)
+- Node.js and Yarn (Bootstrap build)
+- **libvips** — used to generate image variants. On macOS: `brew install vips`
 
 ## Setup
 
@@ -30,9 +31,9 @@ bin/rails db:migrate
 bin/rails db:seed
 ```
 
-Running `bin/rails db:seed` on an empty database leaves the application fully
-browsable, with listings in every lifecycle state, applications, visits and
-reviews.
+New setup steps since Assignment 2: the `image_processing` gem is enabled in the
+`Gemfile` (run `bundle install`) and **libvips** must be installed (`brew install vips`)
+so Active Storage can resize photos.
 
 ## Running
 
@@ -40,57 +41,50 @@ reviews.
 bin/dev
 ```
 
-Then open http://localhost:3000.
+Then open http://localhost:3000. `bin/dev` runs the server together with the
+Bootstrap CSS build.
 
-`bin/dev` starts the Rails server together with the Bootstrap CSS build (via the
-`Procfile.dev` that cssbundling-rails provides).
+## Photo uploads
 
-## What you can browse (read-only)
+- A listing can have several photographs (JPG, PNG, WEBP or GIF).
+- **Maximum size: 5 MB per photo.** Non-images and larger files are rejected.
+- Index and search cards show a resized **variant**, not the full-resolution image.
 
-This assignment is about the data layer and about reading it — nothing in the app
-creates, edits or deletes records.
+## No authentication yet
 
-- **Home (`/`)** — the landing page, with featured published rooms.
-- **Rooms (`/listings`)** — every published listing with its neighborhood, rent
-  and availability. Each room's page shows the full detail, the property's
-  amenities and the reviews of that property.
-- **Properties (`/properties`)** — each property with the listings it contains and
-  its reviews.
-- **Neighborhoods (`/neighborhoods`)** — each neighborhood with the rooms
-  available in it.
-- **Applications (`/applications`)** — the applications and their visits.
+There is no login (that is Assignment 4). Use the **"Acting as"** selector in the
+navbar to choose which user you act as; that user is the author of every action.
 
-## Domain model
+## What you can do
 
-Eleven entities: `users`, `neighborhoods`, `amenities`, `properties`,
-`property_amenities`, `listings`, `photos`, `applications`, `visits`, `reviews`,
-`reports`, `saved_listings`.
+- **Full CRUD**: properties, listings (always created inside a property),
+  neighborhoods and amenities. Strong parameters and flash messages throughout.
+- **Apply**: a seeker applies from the listing page and can withdraw while the
+  application is pending or shortlisted.
+- **Answer applications** (host inbox): shortlist, reject or accept. Accepting an
+  application rejects every other open application on that listing and moves the
+  listing to *reserved* — the three effects happen in a single transaction.
+- **Visits**: the host proposes a visit on a shortlisted application; visits are
+  confirmed, rescheduled, cancelled and completed. Only a completed visit enables a
+  review.
+- **Reviews**: written from the property page after a completed visit.
+- **Listing lifecycle**: draft → published → reserved / rented / withdrawn, with the
+  available actions changing by state. A draft is visible only to its host.
 
-- **Associations** — one-to-many, one-to-one (visit ↔ review) and three
-  many-to-many: properties ↔ amenities (`property_amenities`), users ↔ listings as
-  seekers (`applications`) and as savers (`saved_listings`).
-- **Enums** — the three lifecycles: `Listing#status`, `Application#status` and
-  `Visit#status` (plus `Report#status` and `User#role`).
-- **Validations** — presence of required attributes, unique email, a seeker may
-  not apply twice to the same listing, numeric rent/deposit/stay, a review rating
-  between 1 and 5, an availability date not in the past, and a visit scheduled
-  after its application was created.
-- **Scopes** — `Listing.published` (from the enum), `Listing.available_from(date)`,
-  `Listing.under_rent(amount)`, and `Application.pending_answer`.
+## Hotwire
 
-## Changes since Assignment 1
+- **Turbo Frame**: applying to a listing replaces the application block in place,
+  without reloading the photos and description.
+- **Turbo Stream**: answering an application in the host inbox updates the affected
+  rows and the pending count without a full page reload (including the rows that are
+  auto-rejected when an application is accepted).
 
-The relational structure (tables, columns, types, relationships and unique
-indexes) matches the Assignment 1 diagram in [`docs/domain-model.md`](docs/domain-model.md).
-Two additions were made while implementing it in Rails:
+## Changes since Assignment 2
 
-- **Timestamps** — `created_at` / `updated_at` were added to every table (Rails
-  convention; `created_at` is also what the "visit scheduled after the application
-  was created" rule compares against).
-- **Defaults** — database defaults were set for the state and boolean columns
-  (`listings.status` → Draft, `applications.status` → Pending, `visits.status` →
-  Proposed, `reports.status` → Pending, `users.role` → member, `furnished` and
-  `private_bathroom` → false).
+- Added **Active Storage** (photographs) and **Action Text** (description and house
+  rules). The old `photos` table and the `listings.description` column were removed.
+- Added the listing lifecycle actions and the application / visit / review business
+  rules (enforced in the models).
 
 ## Team
 

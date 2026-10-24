@@ -1,0 +1,44 @@
+<%= turbo_frame_tag "application_block" do %>
+  <% if current_user == listing.property.host %>
+    <p class="text-muted mb-0">This is your own listing.</p>
+  <% elsif !listing.published? %>
+    <p class="text-muted mb-0">This room is not open for applications right now.</p>
+  <% elsif application.present? %>
+    <div class="card">
+      <div class="card-body">
+        <h2 class="h5">Your application</h2>
+        <p class="mb-1">Status: <span class="badge bg-secondary"><%= application.status %></span></p>
+        <p class="mb-1"><strong>Move-in:</strong> <%= application.move_in_on.strftime("%B %-d, %Y") %></p>
+        <p class="mb-2"><strong>Stay:</strong> <%= pluralize(application.stay_months, "month") %></p>
+        <% if application.withdrawable? %>
+          <%= button_to "Withdraw application", withdraw_application_path(application), method: :patch,
+                class: "btn btn-outline-danger btn-sm" %>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <div class="card">
+      <div class="card-body">
+        <h2 class="h5">Apply for this room</h2>
+        <%= form_with model: [listing, Application.new] do |f| %>
+          <div class="mb-2">
+            <%= f.label :message, class: "form-label" %>
+            <%= f.text_area :message, class: "form-control", rows: 3,
+                  placeholder: "Tell the host about yourself..." %>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <%= f.label :move_in_on, "Move-in date", class: "form-label" %>
+              <%= f.date_field :move_in_on, class: "form-control" %>
+            </div>
+            <div class="col-md-6 mb-2">
+              <%= f.label :stay_months, "Stay (months)", class: "form-label" %>
+              <%= f.number_field :stay_months, class: "form-control", min: 1 %>
+            </div>
+          </div>
+          <%= f.submit "Send application", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>

@@ -1,5 +1,7 @@
 <% content_for :title, "Application detail" %>
 
+<% host = (current_user.id == @listing.property.host_id) %>
+
 <div class="container py-5">
   <p><%= link_to "← Back to applications", applications_path, class: "text-decoration-none" %></p>
 
@@ -8,26 +10,76 @@
 
   <ul class="list-unstyled">
     <li><strong>Room:</strong>
-      <%= link_to "#{@listing.property.property_type} in #{@listing.property.neighborhood.name}",
-                  listing_path(@listing) %></li>
-    <li><strong>Move-in date:</strong> <%= @application.move_in_on.strftime("%B %-d, %Y") %></li>
-    <li><strong>Intended stay:</strong> <%= pluralize(@application.stay_months, "month") %></li>
+      <%= link_to "#{@listing.property.property_type} in #{@listing.property.neighborhood.name}", @listing %></li>
+    <li><strong>Move-in:</strong> <%= @application.move_in_on.strftime("%B %-d, %Y") %></li>
+    <li><strong>Stay:</strong> <%= pluralize(@application.stay_months, "month") %></li>
   </ul>
 
   <h2 class="h5 mt-3">Message</h2>
   <p><%= @application.message %></p>
 
+  <% if host && (@application.pending? || @application.shortlisted?) %>
+    <div class="mb-4">
+      <% unless @application.shortlisted? %>
+        <%= button_to "Shortlist", shortlist_application_path(@application), method: :patch,
+              class: "btn btn-outline-info btn-sm", form: { style: "display:inline" } %>
+      <% end %>
+      <%= button_to "Accept", accept_application_path(@application), method: :patch,
+            class: "btn btn-success btn-sm", form: { style: "display:inline" },
+            data: { turbo_confirm: "Accept? This rejects the others and reserves the room." } %>
+      <%= button_to "Reject", reject_application_path(@application), method: :patch,
+            class: "btn btn-outline-danger btn-sm", form: { style: "display:inline" } %>
+    </div>
+  <% end %>
+
   <h2 class="h4 mt-4 mb-3">Visits</h2>
   <% if @visits.any? %>
-    <ul class="list-group">
+    <ul class="list-group mb-3">
       <% @visits.each do |visit| %>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <span><%= visit.scheduled_at.strftime("%B %-d, %Y · %H:%M") %></span>
-          <span class="badge bg-secondary"><%= visit.status %></span>
+        <li class="list-group-item">
+          <div class="d-flex justify-content-between align-items-center">
+            <span><%= visit.scheduled_at.strftime("%B %-d, %Y · %H:%M") %></span>
+            <span class="badge bg-secondary"><%= visit.status %></span>
+          </div>
+          <% unless visit.cancelled? || visit.completed? %>
+            <div class="mt-2 d-flex flex-wrap align-items-center gap-2">
+              <% if visit.proposed? %>
+                <%= button_to "Confirm", confirm_visit_path(visit), method: :patch,
+                      class: "btn btn-outline-success btn-sm", form: { style: "display:inline" } %>
+              <% end %>
+              <% if host %>
+                <%= button_to "Mark completed", complete_visit_path(visit), method: :patch,
+                      class: "btn btn-dark btn-sm", form: { style: "display:inline" } %>
+              <% end %>
+              <%= button_to "Cancel", cancel_visit_path(visit), method: :patch,
+                    class: "btn btn-outline-danger btn-sm", form: { style: "display:inline" } %>
+              <% if host %>
+                <%= form_with url: reschedule_visit_path(visit), method: :patch,
+                      class: "d-inline-flex align-items-center gap-1" do %>
+                  <input type="datetime-local" name="scheduled_at" class="form-control form-control-sm" style="width:auto">
+                  <%= submit_tag "Reschedule", class: "btn btn-outline-secondary btn-sm" %>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
         </li>
       <% end %>
     </ul>
   <% else %>
-    <p class="text-muted">No visits scheduled for this application.</p>
+    <p class="text-muted">No visits yet.</p>
+  <% end %>
+
+  <% if host && @application.shortlisted? %>
+    <div class="card">
+      <div class="card-body">
+        <h3 class="h6">Propose a visit</h3>
+        <%= form_with model: [@application, Visit.new] do |f| %>
+          <div class="d-flex align-items-center gap-2">
+            <%= f.datetime_field :scheduled_at, class: "form-control", style: "width:auto" %>
+            <%= f.submit "Propose visit", class: "btn btn-primary btn-sm" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
   <% end %>
 </div>

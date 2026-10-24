@@ -1,0 +1,26 @@
+<% content_for :title, "Amenities" %>
+
+<div class="container py-5" style="max-width: 640px;">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Amenities</h1>
+    <%= link_to "New amenity", new_amenity_path, class: "btn btn-primary" %>
+  </div>
+
+  <% if @amenities.any? %>
+    <ul class="list-group">
+      <% @amenities.each do |amenity| %>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span><%= amenity.name %></span>
+          <span class="text-nowrap">
+            <%= link_to "Edit", edit_amenity_path(amenity), class: "btn btn-outline-secondary btn-sm" %>
+            <%= button_to "Delete", amenity_path(amenity), method: :delete,
+                  class: "btn btn-outline-danger btn-sm", form: { style: "display:inline" },
+                  data: { turbo_confirm: "Delete this amenity?" } %>
+          </span>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <div class="alert alert-info">No amenities yet.</div>
+  <% end %>
+</div>

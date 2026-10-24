@@ -1,0 +1,78 @@
+<%= form_with model: (listing.new_record? ? [listing.property, listing] : listing) do |f| %>
+  <% if listing.errors.any? %>
+    <div class="alert alert-danger">Please fix the errors below.</div>
+  <% end %>
+
+  <p class="text-muted">
+    Property:
+    <strong><%= listing.property.property_type %> — <%= listing.property.neighborhood.name %></strong>
+    (<%= listing.property.address %>)
+  </p>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :monthly_rent, "Monthly rent (CLP)", class: "form-label" %>
+      <%= f.number_field :monthly_rent, class: "form-control", min: 1, step: 1000, required: true %>
+      <%= render "shared/field_error", resource: listing, attribute: :monthly_rent %>
+    </div>
+    <div class="col-md-6 mb-3">
+      <%= f.label :deposit, "Deposit (CLP)", class: "form-label" %>
+      <%= f.number_field :deposit, class: "form-control", min: 0, step: 1000, required: true %>
+      <%= render "shared/field_error", resource: listing, attribute: :deposit %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :available_on, "Available from", class: "form-label" %>
+      <%= f.date_field :available_on, class: "form-control", required: true %>
+      <%= render "shared/field_error", resource: listing, attribute: :available_on %>
+    </div>
+    <div class="col-md-6 mb-3">
+      <%= f.label :minimum_stay_months, "Minimum stay (months)", class: "form-label" %>
+      <%= f.number_field :minimum_stay_months, class: "form-control", min: 1, required: true %>
+      <%= render "shared/field_error", resource: listing, attribute: :minimum_stay_months %>
+    </div>
+  </div>
+
+  <div class="form-check mb-2">
+    <%= f.check_box :furnished, class: "form-check-input" %>
+    <%= f.label :furnished, class: "form-check-label" %>
+  </div>
+  <div class="form-check mb-3">
+    <%= f.check_box :private_bathroom, class: "form-check-input" %>
+    <%= f.label :private_bathroom, "Private bathroom", class: "form-check-label" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :description, class: "form-label" %>
+    <%= f.rich_text_area :description %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :house_rules, "House rules", class: "form-label" %>
+    <%= f.rich_text_area :house_rules %>
+  </div>
+
+  <div class="mb-4">
+    <%= f.label :photos, "Photographs", class: "form-label" %>
+    <%= f.file_field :photos, multiple: true, accept: "image/*", class: "form-control" %>
+    <div class="form-text">You can select several images. Only images, max 5 MB each.
+      On edit, choosing new files replaces the current photos.</div>
+    <%= render "shared/field_error", resource: listing, attribute: :photos %>
+    <% if listing.photos.attached? %>
+      <div class="row g-2 mt-2">
+        <% listing.photos.each do |photo| %>
+          <div class="col-3">
+            <%= image_tag photo.variant(resize_to_limit: [160, 160]), class: "img-thumbnail" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <%= f.submit class: "btn btn-primary" %>
+  <%= link_to "Cancel",
+        (listing.new_record? ? property_path(listing.property) : listing_path(listing)),
+        class: "btn btn-link" %>
+<% end %>
