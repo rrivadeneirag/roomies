@@ -90,6 +90,20 @@
     <% end %>
   <% end %>
 
-  <h2 class="h4 mt-5 mb-3">Reviews</h2>
-  <%= render "shared/reviews", reviews: @reviews %>
+  <h2 class="h4 mt-5 mb-3">
+    Reviews
+    <% if @reviews.any? %>
+      <small class="text-muted">
+        — average
+        <%= @reviews.average(:rating)
+            .to_f.round(1) %> / 5
+        from
+        <%= pluralize(@reviews.size,
+          "review") %>
+      </small>
+    <% end %>
+  </h2>
+  <%= render "shared/reviews",
+      reviews: @reviews %>
+
 </div>
