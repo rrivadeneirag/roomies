@@ -12,7 +12,19 @@
           <li class="nav-item"><%= link_to "Properties", properties_path, class: "nav-link" %></li>
           <li class="nav-item"><%= link_to "Neighborhoods", neighborhoods_path, class: "nav-link" %></li>
           <li class="nav-item"><%= link_to "Amenities", amenities_path, class: "nav-link" %></li>
-          <li class="nav-item"><%= link_to "Applications", applications_path, class: "nav-link" %></li>
+          <li class="nav-item">
+            <%= link_to applications_path,
+                class: "nav-link" do %>
+              Applications
+              <% if pending_applications_count
+                  .positive? %>
+                <span class="badge bg-primary">
+                  <%= pending_applications_count %>
+                </span>
+              <% end %>
+            <% end %>
+          </li>
+
           <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
             <%= form_with url: switch_user_path, method: :post, data: { turbo: false } do |f| %>
               <div class="d-flex align-items-center gap-2">

@@ -2,13 +2,23 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
-  helper_method :current_user
+  helper_method :current_user,
+              :pending_applications_count
 
-  private
+private
 
-  # No authentication yet (that is Assignment 4). The acting user is chosen from
-  # the navbar selector and stored in the session. Falls back to the first user.
-  def current_user
-    @current_user ||= User.find_by(id: session[:user_id]) || User.first
-  end
+def pending_applications_count
+  return @pending_applications_count if
+    defined?(@pending_applications_count)
+  @pending_applications_count =
+    if current_user
+      Application.joins(listing: :property)
+        .where(properties: {
+          host_id: current_user.id })
+        .where(status: ["Pending",
+          "Shortlisted"]).count
+    else
+      0
+    end
 end
+
