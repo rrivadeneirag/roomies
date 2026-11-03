@@ -1,4 +1,5 @@
 class PropertiesController < ApplicationController
+  allow_unauthenticated_access only: %i[ index show ]
   before_action :set_property, only: [:show, :edit, :update, :destroy]
 
   def index
@@ -15,18 +16,20 @@ class PropertiesController < ApplicationController
     @reviewable_visits = Visit.completed
                               .joins(application: { listing: :property })
                               .where(properties: { id: @property.id })
-                              .where(applications: { seeker_id: current_user.id })
+                              .where(applications: { seeker_id: current_user&.id })
                               .where.missing(:review)
                               .includes(application: { listing: :property })
   end
 
   def new
     @property = Property.new
+    authorize @property
   end
 
   def create
     @property = Property.new(property_params)
     @property.host = current_user
+    authorize @property
     if @property.save
       redirect_to @property, notice: "Property created."
     else
@@ -35,9 +38,11 @@ class PropertiesController < ApplicationController
   end
 
   def edit
+    authorize @property
   end
 
   def update
+    authorize @property
     if @property.update(property_params)
       redirect_to @property, notice: "Property updated."
     else
@@ -46,6 +51,7 @@ class PropertiesController < ApplicationController
   end
 
   def destroy
+    authorize @property
     @property.destroy
     redirect_to properties_path, notice: "Property deleted.", status: :see_other
   end

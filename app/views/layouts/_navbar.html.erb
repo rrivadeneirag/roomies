@@ -9,22 +9,31 @@
       <div class="collapse navbar-collapse" id="mainNav">
         <ul class="navbar-nav ms-auto align-items-lg-center">
           <li class="nav-item"><%= link_to "Rooms", listings_path, class: "nav-link" %></li>
+          <li class="nav-item"><%= link_to "Search", search_path, class: "nav-link" %></li>
           <li class="nav-item"><%= link_to "Properties", properties_path, class: "nav-link" %></li>
           <li class="nav-item"><%= link_to "Neighborhoods", neighborhoods_path, class: "nav-link" %></li>
-          <li class="nav-item"><%= link_to "Amenities", amenities_path, class: "nav-link" %></li>
-          <li class="nav-item"><%= link_to "Applications", applications_path, class: "nav-link" %></li>
-          <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
-            <%= form_with url: switch_user_path, method: :post, data: { turbo: false } do |f| %>
-              <div class="d-flex align-items-center gap-2">
-                <span class="text-muted small text-nowrap">Acting as</span>
-                <%= f.select :user_id,
-                      options_from_collection_for_select(User.order(:name), :id, :name, current_user&.id),
-                      {},
-                      class: "form-select form-select-sm",
-                      onchange: "this.form.requestSubmit()" %>
-              </div>
+
+          <% if authenticated? %>
+            <li class="nav-item"><%= link_to "Amenities", amenities_path, class: "nav-link" %></li>
+            <% if current_user.moderator? %>
+              <li class="nav-item"><%= link_to "Reports", reports_path, class: "nav-link" %></li>
             <% end %>
-          </li>
+            <li class="nav-item">
+              <%= link_to applications_path, class: "nav-link" do %>
+                Applications
+                <% if pending_applications_count.positive? %>
+                  <span class="badge bg-primary"><%= pending_applications_count %></span>
+                <% end %>
+              <% end %>
+            </li>
+            <li class="nav-item"><%= link_to current_user.name, profile_path, class: "nav-link" %></li>
+            <li class="nav-item">
+              <%= button_to "Log out", session_path, method: :delete, class: "btn btn-outline-secondary btn-sm ms-lg-2" %>
+            </li>
+          <% else %>
+            <li class="nav-item"><%= link_to "Log in", new_session_path, class: "nav-link" %></li>
+            <li class="nav-item"><%= link_to "Sign up", new_registration_path, class: "btn btn-primary btn-sm ms-lg-2" %></li>
+          <% end %>
         </ul>
       </div>
     </div>

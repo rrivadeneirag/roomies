@@ -54,13 +54,13 @@ amenities = {}
 end
 
 puts "Creating users..."
-moderator = User.create!(name: "Admin Moderator", email: "moderator@roomies.cl",
-                         password_digest: "seeded", role: :moderator, phone: "+56 9 1111 1111")
+moderator = User.create!(name: "Admin Moderator", email_address: "moderator@roomies.cl",
+                         password: "password", password_confirmation: "password", role: :moderator, phone: "+56 9 1111 1111")
 
 hosts = []
 [["Camila Rojas", "camila@roomies.cl"], ["Diego Fuentes", "diego@roomies.cl"],
  ["Valentina Soto", "valentina@roomies.cl"], ["Matías Herrera", "matias@roomies.cl"]].each do |name, email|
-  hosts << User.create!(name: name, email: email, password_digest: "seeded",
+  hosts << User.create!(name: name, email_address: email, password: "password", password_confirmation: "password",
                         role: :member, phone: "+56 9 2222 0000")
 end
 
@@ -68,7 +68,7 @@ seekers = []
 [["Renato Rivadeneira", "renato@roomies.cl"], ["Constanza Bustamante", "constanza@roomies.cl"],
  ["Elena Durán", "elena@roomies.cl"], ["Tomás Vial", "tomas@roomies.cl"],
  ["Francisca León", "francisca@roomies.cl"], ["Ignacio Pérez", "ignacio@roomies.cl"]].each do |name, email|
-  seekers << User.create!(name: name, email: email, password_digest: "seeded",
+  seekers << User.create!(name: name, email_address: email, password: "password", password_confirmation: "password",
                           role: :member, phone: "+56 9 3333 0000")
 end
 

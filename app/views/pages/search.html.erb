@@ -1,0 +1,99 @@
+<% content_for :title, "Search rooms" %>
+<div class="container py-4">
+  <h1 class="h3 mb-4">Search rooms</h1>
+
+  <form id="search-form" class="row g-3 mb-4">
+    <div class="col-md-3">
+      <label class="form-label">Neighborhood</label>
+      <select name="neighborhood" class="form-select">
+        <option value="">Any</option>
+        <% Neighborhood.order(:name).each do |n| %>
+          <option value="<%= n.id %>"><%= n.name %></option>
+        <% end %>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Max rent (CLP)</label>
+      <input type="number" name="max_rent" class="form-control" min="0" step="10000">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Type</label>
+      <select name="property_type" class="form-select">
+        <option value="">Any</option>
+        <% ["Apartment", "House", "Studio", "Room"].each do |t| %>
+          <option value="<%= t %>"><%= t %></option>
+        <% end %>
+      </select>
+    </div>
+    <div class="col-md-3 d-flex align-items-end gap-3">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="furnished" value="true" id="furnished">
+        <label class="form-check-label" for="furnished">Furnished</label>
+      </div>
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+  </form>
+
+  <p id="search-status" class="text-muted"></p>
+  <div id="results" class="row g-4"></div>
+</div>
+
+<script>
+  (function () {
+    const form = document.getElementById("search-form");
+    const results = document.getElementById("results");
+    const status = document.getElementById("search-status");
+
+    async function runSearch(event) {
+      if (event) event.preventDefault();
+
+      const params = new URLSearchParams();
+      new FormData(form).forEach((value, key) => {
+        if (value) params.append(key, value);
+      });
+
+      status.textContent = "Searching...";
+      results.innerHTML = "";
+
+      try {
+        const response = await fetch(`/api/v1/listings?${params.toString()}`, {
+          headers: { "Accept": "application/json" }
+        });
+        if (!response.ok) throw new Error(`Server responded ${response.status}`);
+        const data = await response.json();
+        render(data.listings);
+        status.textContent = `${data.count} room(s) found.`;
+      } catch (error) {
+        status.textContent = "Something went wrong. Please try again.";
+      }
+    }
+
+    function render(listings) {
+      if (!listings.length) {
+        results.innerHTML = '<p class="text-muted">No rooms match your search.</p>';
+        return;
+      }
+      results.innerHTML = listings.map((l) => {
+        const photo = l.photo_url
+          ? `<img src="${l.photo_url}" class="card-img-top" alt="" style="height:180px;object-fit:cover;">`
+          : "";
+        const rent = Number(l.monthly_rent).toLocaleString("es-CL");
+        return `
+          <div class="col-md-4">
+            <div class="card h-100">
+              ${photo}
+              <div class="card-body">
+                <h2 class="h6">${l.property_type} in ${l.neighborhood}</h2>
+                <p class="mb-1 fw-bold">CLP ${rent} <small class="text-muted">/ month</small></p>
+                <p class="mb-2 small text-muted">${l.city} · available ${l.available_on}</p>
+                <a href="${l.url}" class="btn btn-sm btn-outline-primary">View</a>
+              </div>
+            </div>
+          </div>`;
+      }).join("");
+    }
+
+    form.addEventListener("submit", runSearch);
+    runSearch();
+  })();
+</script>

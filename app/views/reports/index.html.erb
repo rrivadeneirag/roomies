@@ -1,0 +1,55 @@
+<% content_for :title, "Reports" %>
+<div class="container py-4">
+  <h1 class="h3 mb-4">Reports</h1>
+
+  <% if @reports.empty? %>
+    <p class="text-muted">There are no reports right now.</p>
+  <% else %>
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Listing</th>
+            <th>Reporter</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Handled by</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @reports.each do |report| %>
+            <tr>
+              <td>
+                <% if report.listing %>
+                  <%= link_to "#{report.listing.property.property_type} — #{report.listing.property.neighborhood.name}",
+                        listing_path(report.listing) %>
+                <% else %>
+                  <span class="text-muted">(deleted)</span>
+                <% end %>
+              </td>
+              <td><%= report.reporter&.name %></td>
+              <td style="max-width: 20rem;"><%= report.reason %></td>
+              <td>
+                <%= form_with url: report_path(report), method: :patch, class: "d-flex gap-2" do %>
+                  <%= select_tag "report[status]",
+                        options_for_select(Report.statuses.keys.map { |k| [k.humanize, k] }, report.status),
+                        class: "form-select form-select-sm" %>
+                  <%= submit_tag "Save", class: "btn btn-sm btn-outline-primary" %>
+                <% end %>
+              </td>
+              <td><%= report.moderator&.name || "—" %></td>
+              <td>
+                <% if report.listing && !report.listing.withdrawn? && !report.listing.rented? %>
+                  <%= button_to "Take listing down", withdraw_listing_path(report.listing),
+                        method: :patch, class: "btn btn-sm btn-outline-warning",
+                        form: { style: "display:inline" } %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

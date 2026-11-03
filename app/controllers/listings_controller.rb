@@ -1,4 +1,5 @@
 class ListingsController < ApplicationController
+  allow_unauthenticated_access only: %i[ index show ]
   before_action :set_listing, only: [:show, :edit, :update, :destroy, :publish, :withdraw, :mark_rented]
   before_action :set_property, only: [:new, :create]
 
@@ -26,10 +27,12 @@ class ListingsController < ApplicationController
 
   def new
     @listing = @property.listings.build
+    authorize @listing
   end
 
   def create
     @listing = @property.listings.build(listing_params)
+    authorize @listing
     if @listing.save
       redirect_to @listing, notice: "Listing created as draft."
     else
@@ -38,9 +41,11 @@ class ListingsController < ApplicationController
   end
 
   def edit
+    authorize @listing
   end
 
   def update
+    authorize @listing
     if @listing.update(listing_params)
       redirect_to @listing, notice: "Listing updated."
     else
@@ -49,22 +54,26 @@ class ListingsController < ApplicationController
   end
 
   def destroy
+    authorize @listing
     property = @listing.property
     @listing.destroy
     redirect_to property, notice: "Listing deleted.", status: :see_other
   end
 
   def publish
+    authorize @listing, :publish?
     @listing.publish!
     redirect_to @listing, notice: "Listing published."
   end
 
   def withdraw
+    authorize @listing, :withdraw?
     @listing.withdraw!
     redirect_to @listing, notice: "Listing withdrawn."
   end
 
   def mark_rented
+    authorize @listing, :mark_rented?
     @listing.mark_rented!
     redirect_to @listing, notice: "Listing marked as rented."
   end

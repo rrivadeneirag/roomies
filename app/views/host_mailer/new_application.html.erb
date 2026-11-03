@@ -1,0 +1,21 @@
+<h1>You have a new application</h1>
+
+<p>Hi <%= @host.name %>,</p>
+
+<p>
+  <strong><%= @seeker.name %></strong> applied to your
+  <%= @property.property_type.downcase %> in <%= @property.neighborhood.name %>
+  (<%= @property.address %>).
+</p>
+
+<ul>
+  <li>Move-in date: <%= @application.move_in_on&.strftime("%B %-d, %Y") %></li>
+  <li>Stay: <%= @application.stay_months %> months</li>
+</ul>
+
+<% if @application.message.present? %>
+  <p>Their message:</p>
+  <blockquote><%= @application.message %></blockquote>
+<% end %>
+
+<p><%= link_to "Review the application", applications_url %></p>

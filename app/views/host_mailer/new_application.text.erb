@@ -1,0 +1,16 @@
+You have a new application
+
+Hi <%= @host.name %>,
+
+<%= @seeker.name %> applied to your <%= @property.property_type.downcase %> in
+<%= @property.neighborhood.name %> (<%= @property.address %>).
+
+Move-in date: <%= @application.move_in_on&.strftime("%B %-d, %Y") %>
+Stay: <%= @application.stay_months %> months
+
+<% if @application.message.present? -%>
+Their message:
+<%= @application.message %>
+<% end -%>
+
+Review your applications: <%= applications_url %>

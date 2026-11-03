@@ -23,6 +23,7 @@ class ApplicationsController < ApplicationController
     @application = @listing.applications.build(application_params)
     @application.seeker = current_user
     if @application.save
+      HostMailer.new_application(@application).deliver_later
       redirect_to @listing, notice: "Application sent."
     else
       redirect_to @listing, alert: @application.errors.full_messages.to_sentence

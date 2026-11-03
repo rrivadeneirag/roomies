@@ -1,0 +1,17 @@
+<% content_for :title, "Change password" %>
+<div class="container py-5" style="max-width: 420px;">
+  <h1 class="h3 mb-4">Set a new password</h1>
+  <%= form_with url: password_path(params[:token]), method: :put do %>
+    <div class="mb-3">
+      <%= label_tag :password, "New password", class: "form-label" %>
+      <%= password_field_tag :password, nil, class: "form-control",
+            required: true, autocomplete: "new-password" %>
+    </div>
+    <div class="mb-3">
+      <%= label_tag :password_confirmation, "Confirm new password", class: "form-label" %>
+      <%= password_field_tag :password_confirmation, nil, class: "form-control",
+            required: true, autocomplete: "new-password" %>
+    </div>
+    <%= submit_tag "Save password", class: "btn btn-primary w-100" %>
+  <% end %>
+</div>

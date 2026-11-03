@@ -1,4 +1,5 @@
 class NeighborhoodsController < ApplicationController
+  allow_unauthenticated_access only: %i[ index show ]
   before_action :set_neighborhood, only: [:show, :edit, :update, :destroy]
 
   def index
@@ -16,10 +17,12 @@ class NeighborhoodsController < ApplicationController
 
   def new
     @neighborhood = Neighborhood.new
+    authorize @neighborhood
   end
 
   def create
     @neighborhood = Neighborhood.new(neighborhood_params)
+    authorize @neighborhood
     if @neighborhood.save
       redirect_to @neighborhood, notice: "Neighborhood created."
     else
@@ -28,9 +31,11 @@ class NeighborhoodsController < ApplicationController
   end
 
   def edit
+    authorize @neighborhood
   end
 
   def update
+    authorize @neighborhood
     if @neighborhood.update(neighborhood_params)
       redirect_to @neighborhood, notice: "Neighborhood updated."
     else
@@ -39,6 +44,7 @@ class NeighborhoodsController < ApplicationController
   end
 
   def destroy
+    authorize @neighborhood
     @neighborhood.destroy
     redirect_to neighborhoods_path, notice: "Neighborhood deleted.", status: :see_other
   end
