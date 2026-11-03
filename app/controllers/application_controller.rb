@@ -4,7 +4,9 @@ class ApplicationController < ActionController::Base
 
   allow_browser versions: :modern
 
-  helper_method :current_user, :pending_applications_count
+  helper_method :current_user,
+                :pending_applications_count,
+                :pending_reports_count
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
@@ -33,5 +35,11 @@ class ApplicationController < ActionController::Base
       else
         0
       end
+  end
+
+  def pending_reports_count
+    return 0 unless current_user&.moderator?
+
+    Report.where(status: "Pending").count
   end
 end
