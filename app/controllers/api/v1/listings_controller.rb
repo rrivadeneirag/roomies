@@ -14,6 +14,7 @@ module Api
         scope = scope.available_from(params[:available_on]) if params[:available_on].present?
         scope = scope.where(furnished: true) if params[:furnished] == "true"
         scope = scope.where(properties: { property_type: params[:property_type] }) if params[:property_type].present?
+        scope = scope.where(private_bathroom: true) if params[:private_bathroom] == "true" 
 
         @listings = scope.order(available_on: :asc)
       end
