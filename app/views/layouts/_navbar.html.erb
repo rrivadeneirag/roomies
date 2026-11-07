@@ -16,7 +16,14 @@
           <% if authenticated? %>
             <li class="nav-item"><%= link_to "Amenities", amenities_path, class: "nav-link" %></li>
             <% if current_user.moderator? %>
-              <li class="nav-item"><%= link_to "Reports", reports_path, class: "nav-link" %></li>
+              <li class="nav-item">
+                <%= link_to reports_path, class: "nav-link" do %>
+                  Reports
+                  <% if pending_reports_count.positive? %>
+                    <span class="badge bg-danger"><%= pending_reports_count %></span>
+                  <% end %>
+                <% end %>
+              </li>
             <% end %>
             <li class="nav-item">
               <%= link_to applications_path, class: "nav-link" do %>
