@@ -2,7 +2,6 @@ json.id            listing.id
 json.property_type listing.property.property_type
 json.neighborhood  listing.property.neighborhood.name
 json.city          listing.property.neighborhood.city
-json.address       listing.property.address
 json.monthly_rent  listing.monthly_rent
 json.deposit       listing.deposit
 json.available_on  listing.available_on

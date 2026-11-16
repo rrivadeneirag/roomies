@@ -76,6 +76,8 @@
       }
     }
 
+    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
     function render(listings) {
       if (!listings.length) {
         results.innerHTML = '<p class="text-muted">No rooms match your search.</p>';
@@ -83,7 +85,7 @@
       }
       results.innerHTML = listings.map((l) => {
         const photo = l.photo_url
-          ? `<img src="${l.photo_url}" class="card-img-top" alt="" style="height:180px;object-fit:cover;">`
+          ? `<img src="${esc(l.photo_url)}" class="card-img-top" alt="" style="height:180px;object-fit:cover;">`
           : "";
         const rent = Number(l.monthly_rent).toLocaleString("es-CL");
         return `
@@ -91,10 +93,10 @@
             <div class="card h-100">
               ${photo}
               <div class="card-body">
-                <h2 class="h6">${l.property_type} in ${l.neighborhood}</h2>
+                <h2 class="h6">${esc(l.property_type)} in ${esc(l.neighborhood)}</h2>
                 <p class="mb-1 fw-bold">CLP ${rent} <small class="text-muted">/ month</small></p>
-                <p class="mb-2 small text-muted">${l.city} · available ${l.available_on}</p>
-                <a href="${l.url}" class="btn btn-sm btn-outline-primary">View</a>
+                <p class="mb-2 small text-muted">${esc(l.city)} · available ${esc(l.available_on)}</p>
+                <a href="${esc(l.url)}" class="btn btn-sm btn-outline-primary">View</a>
               </div>
             </div>
           </div>`;

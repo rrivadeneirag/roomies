@@ -15,6 +15,8 @@ class ApplicationsController < ApplicationController
   end
 
   def show
+    return render "pages/forbidden", status: :forbidden unless participant?(@application)
+
     @listing = @application.listing
     @visits = @application.visits.order(:scheduled_at)
   end
@@ -31,6 +33,8 @@ class ApplicationsController < ApplicationController
   end
 
   def destroy
+    return render "pages/forbidden", status: :forbidden unless participant?(@application)
+
     listing = @application.listing
     @application.destroy
     redirect_to listing, notice: "Application removed.", status: :see_other
@@ -108,6 +112,12 @@ class ApplicationsController < ApplicationController
 
   def set_listing
     @listing = Listing.find(params[:listing_id])
+  end
+
+  # Only the seeker who applied or the host of the listing may see/remove it.
+  def participant?(application)
+    application.seeker_id == current_user.id ||
+      application.listing.property.host_id == current_user.id
   end
 
   def host_of?(application)

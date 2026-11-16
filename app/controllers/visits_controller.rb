@@ -1,5 +1,6 @@
 class VisitsController < ApplicationController
   before_action :set_visit, only: [:confirm, :cancel, :complete, :reschedule]
+  before_action :authorize_participant, only: [:confirm, :cancel, :complete, :reschedule]
 
   def create
     @application = Application.find(params[:application_id])
@@ -44,6 +45,14 @@ class VisitsController < ApplicationController
 
   def set_visit
     @visit = Visit.find(params[:id])
+  end
+
+  # Only the seeker or the host involved in the visit may act on it.
+  def authorize_participant
+    app = @visit.application
+    unless app.seeker_id == current_user.id || app.listing.property.host_id == current_user.id
+      render "pages/forbidden", status: :forbidden
+    end
   end
 
   def host_of?(application)
